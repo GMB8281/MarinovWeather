@@ -229,6 +229,14 @@
                     android:layout_height="wrap_content"
                     android:text="@string/country_ukraine"/>
 
+                <!-- Novo Botão de País -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_country_united_states"
+                    style="@style/Widget.Material3.Button.ElevatedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/country_united_states"/>
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_country_uruguay"
                     style="@style/Widget.Material3.Button.ElevatedButton"

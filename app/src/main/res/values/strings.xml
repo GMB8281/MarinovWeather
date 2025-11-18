@@ -47,6 +47,7 @@
     <string name="country_iran">Iran</string>
     <string name="country_turkey">Turkey</string>
     <string name="country_israel">Israel</string>
+    <string name="country_united_states">United States</string>
 
     <!-- Cities -->
     <string name="city_sao_paulo">São Paulo, SP</string>
@@ -92,5 +93,13 @@
     <string name="city_teera">Tehran, Tehran, Iran</string>
     <string name="city_cankaya">Çankaya, Ankara, Turkey</string>
     <string name="city_jerusalem">Jerusalem, Jerusalem</string>
-</resources>
 
+    <!-- Novas Cidades - United States -->
+    <string name="city_chicago">Chicago, Illinois</string>
+    <string name="city_new_york_city">New York City, New York</string>
+    <string name="city_texas_city">Texas City, Texas</string>
+    <string name="city_glover_park">Glover Park, Washington, D.C.</string>
+    <string name="city_washington_dc">Washington, D.C.</string>
+    <string name="city_florida_center">Florida Center, Orlando, Florida</string>
+    <string name="city_california_pa">California, Pennsylvania</string>
+</resources>

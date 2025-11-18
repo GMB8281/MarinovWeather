@@ -731,4 +731,62 @@
             android:text="@string/city_jerusalem" />
     </LinearLayout>
 
+    <!-- Novo Layout - United States -->
+    <LinearLayout
+        android:id="@+id/cities_united_states"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/city"
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_chicago"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_chicago" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_new_york_city"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_new_york_city" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_texas_city"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_texas_city" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_glover_park"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_glover_park" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_washington_dc"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_washington_dc" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_florida_center"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_florida_center" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_california_pa"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/city_california_pa" />
+    </LinearLayout>
+
 </merge>

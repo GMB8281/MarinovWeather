@@ -137,6 +137,13 @@ class MainActivity : AppCompatActivity() {
         R.id.btn_abu_dhabi to City("https://weather.com/pt-BR/clima/hoje/l/3d5d25f87ba096ee5d2460f4b279363402a1f31068b3d0674059f68ad94821da", DataSource.WEATHER_COM),
         R.id.btn_teera to City("https://weather.com/pt-BR/clima/hoje/l/75814d99326fdea4d4f0d79772a0a7193bb0b4adf556bae671e29816c12a7ba1", DataSource.WEATHER_COM),
         R.id.btn_cankaya to City("https://weather.com/pt-BR/clima/hoje/l/7f6d21f7b08cf5eb15d1371590e895e74304f3972a925eacf3fc914bec2c7464", DataSource.WEATHER_COM),
+        R.id.btn_chicago to City("https://weather.com/weather/today/l/4c9ff75840c6ce23fa10812d0f14b605af47896e9ca3fd59abdb9edd1b9d486a", DataSource.WEATHER_COM),
+        R.id.btn_new_york_city to City("https://weather.com/weather/today/l/98e8083bb7de0fc467fd1e22a1692f8f200343e4e0acc3b3fc31e71d29113b54", DataSource.WEATHER_COM),
+        R.id.btn_texas_city to City("https://weather.com/weather/today/l/5405e8a4f7b8d4577e185e7051998f2613bf2bca1d8f463cb2bb50520501f55b", DataSource.WEATHER_COM),
+        R.id.btn_glover_park to City("https://weather.com/weather/today/l/8159437285b84ab54f05db440efcfae11aff64b5fdc0f8ed60f696c7e59d6166", DataSource.WEATHER_COM),
+        R.id.btn_washington_dc to City("https://weather.com/weather/today/l/c4025fdf0177c872b7fc2e0d09e7c523995ef49e21145e2d2438fe08649ca9e8", DataSource.WEATHER_COM),
+        R.id.btn_florida_center to City("https://weather.com/weather/today/l/72499e4e966f535761c206b7d7c176520f961080e264ce481c2de224f9f651a5", DataSource.WEATHER_COM),
+        R.id.btn_california_pa to City("https://weather.com/weather/today/l/11e2a661192a085e9f8fcb37c71bb3007f2d52e89989ed75047db1a5ae2c6d7f", DataSource.WEATHER_COM),
         R.id.btn_jerusalem to City("https://weather.com/pt-BR/clima/hoje/l/eb9298942ea6bff5eefab6cba776eb07740f5a3a8f9385bff8ed65798f9f86eb", DataSource.WEATHER_COM)
     )
 
@@ -168,6 +175,7 @@ class MainActivity : AppCompatActivity() {
             R.id.btn_country_argentina to findViewById(R.id.cities_argentina),
             R.id.btn_country_poland to findViewById(R.id.cities_poland),
             R.id.btn_country_japan to findViewById(R.id.cities_japan),
+            R.id.btn_country_united_states to findViewById(R.id.cities_united_states),
             R.id.btn_country_uae to findViewById(R.id.cities_uae),
             R.id.btn_country_iran to findViewById<LinearLayout>(R.id.cities_iran),
             R.id.btn_country_turkey to findViewById(R.id.cities_turkey),
