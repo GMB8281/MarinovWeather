@@ -66,36 +66,36 @@ class MainActivity : AppCompatActivity() {
 
     private val countryToCityLayoutMap by lazy {
         mapOf<Int, LinearLayout>(
-            R.id.btn_country_brazil to findViewById<LinearLayout>(R.id.cities_brazil),
-            R.id.btn_country_china to findViewById<LinearLayout>(R.id.cities_china),
-            R.id.btn_country_india to findViewById<LinearLayout>(R.id.cities_india),
-            R.id.btn_country_russia to findViewById<LinearLayout>(R.id.cities_russia),
-            R.id.btn_country_ukraine to findViewById<LinearLayout>(R.id.cities_ukraine),
-            R.id.btn_country_qatar to findViewById<LinearLayout>(R.id.cities_qatar),
-            R.id.btn_country_germany to findViewById<LinearLayout>(R.id.cities_germany),
-            R.id.btn_country_france to findViewById<LinearLayout>(R.id.cities_france),
-            R.id.btn_country_portugal to findViewById<LinearLayout>(R.id.cities_portugal),
-            R.id.btn_country_italy to findViewById<LinearLayout>(R.id.cities_italy),
-            R.id.btn_country_belgium to findViewById<LinearLayout>(R.id.cities_belgium),
-            R.id.btn_country_netherlands to findViewById<LinearLayout>(R.id.cities_netherlands),
-            R.id.btn_country_south_korea to findViewById<LinearLayout>(R.id.cities_south_korea),
-            R.id.btn_country_north_korea to findViewById<LinearLayout>(R.id.cities_north_korea),
-            R.id.btn_country_spain to findViewById<LinearLayout>(R.id.cities_spain),
-            R.id.btn_country_cuba to findViewById<LinearLayout>(R.id.cities_cuba),
-            R.id.btn_country_chile to findViewById<LinearLayout>(R.id.cities_chile),
-            R.id.btn_country_mexico to findViewById<LinearLayout>(R.id.cities_mexico),
-            R.id.btn_country_venezuela to findViewById<LinearLayout>(R.id.cities_venezuela),
-            R.id.btn_country_bolivia to findViewById<LinearLayout>(R.id.cities_bolivia),
-            R.id.btn_country_paraguay to findViewById<LinearLayout>(R.id.cities_paraguay),
-            R.id.btn_country_uruguay to findViewById<LinearLayout>(R.id.cities_uruguay),
-            R.id.btn_country_argentina to findViewById<LinearLayout>(R.id.cities_argentina),
-            R.id.btn_country_poland to findViewById<LinearLayout>(R.id.cities_poland),
-            R.id.btn_country_japan to findViewById<LinearLayout>(R.id.cities_japan),
-            R.id.btn_country_united_states to findViewById<LinearLayout>(R.id.cities_united_states),
-            R.id.btn_country_uae to findViewById<LinearLayout>(R.id.cities_uae),
-            R.id.btn_country_iran to findViewById<LinearLayout>(R.id.cities_iran),
-            R.id.btn_country_turkey to findViewById<LinearLayout>(R.id.cities_turkey),
-            R.id.btn_country_israel to findViewById<LinearLayout>(R.id.cities_israel)
+            R.id.btn_country_brazil to findViewById(R.id.cities_brazil),
+            R.id.btn_country_china to findViewById(R.id.cities_china),
+            R.id.btn_country_india to findViewById(R.id.cities_india),
+            R.id.btn_country_russia to findViewById(R.id.cities_russia),
+            R.id.btn_country_ukraine to findViewById(R.id.cities_ukraine),
+            R.id.btn_country_qatar to findViewById(R.id.cities_qatar),
+            R.id.btn_country_germany to findViewById(R.id.cities_germany),
+            R.id.btn_country_france to findViewById(R.id.cities_france),
+            R.id.btn_country_portugal to findViewById(R.id.cities_portugal),
+            R.id.btn_country_italy to findViewById(R.id.cities_italy),
+            R.id.btn_country_belgium to findViewById(R.id.cities_belgium),
+            R.id.btn_country_netherlands to findViewById(R.id.cities_netherlands),
+            R.id.btn_country_south_korea to findViewById(R.id.cities_south_korea),
+            R.id.btn_country_north_korea to findViewById(R.id.cities_north_korea),
+            R.id.btn_country_spain to findViewById(R.id.cities_spain),
+            R.id.btn_country_cuba to findViewById(R.id.cities_cuba),
+            R.id.btn_country_chile to findViewById(R.id.cities_chile),
+            R.id.btn_country_mexico to findViewById(R.id.cities_mexico),
+            R.id.btn_country_venezuela to findViewById(R.id.cities_venezuela),
+            R.id.btn_country_bolivia to findViewById(R.id.cities_bolivia),
+            R.id.btn_country_paraguay to findViewById(R.id.cities_paraguay),
+            R.id.btn_country_uruguay to findViewById(R.id.cities_uruguay),
+            R.id.btn_country_argentina to findViewById(R.id.cities_argentina),
+            R.id.btn_country_poland to findViewById(R.id.cities_poland),
+            R.id.btn_country_japan to findViewById(R.id.cities_japan),
+            R.id.btn_country_united_states to findViewById(R.id.cities_united_states),
+            R.id.btn_country_uae to findViewById(R.id.cities_uae),
+            R.id.btn_country_iran to findViewById(R.id.cities_iran),
+            R.id.btn_country_turkey to findViewById(R.id.cities_turkey),
+            R.id.btn_country_israel to findViewById(R.id.cities_israel)
         )
     }
 
@@ -270,7 +270,6 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI(data: WeatherData) {
         tvCity.text = data.city
         tvCity.isSelected = true
-
         tvTemperature.text = data.temperature
         tvSensation.text = getString(R.string.sensation_format, data.sensation)
         tvWind.text = getString(R.string.wind_format, data.wind)

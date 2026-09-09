@@ -2,36 +2,26 @@ package com.marinov.watchweather.data.remote
 
 import com.marinov.watchweather.data.model.WeatherData
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 
 class WeatherComScraper : WeatherScraper {
 
     override fun scrape(url: String, document: Document): WeatherData? {
-        val current = document.findFirstBySelectors(
-            "section[data-testid=current-conditions]",
-            "[class*=CurrentConditions]"
-        )
-
         val city = getCity(document)
-        val temperature = getTemperature(current, document)
+        val temperature = getTemperature(document)
 
-        if (temperature.isNullOrBlank()) return null
+        if (temperature.isNullOrBlank() || temperature == "--") return null
 
-        val sensationLabels = listOf("Sensação térmica", "Sensação", "Feels like")
-        val sensation = findLabelValue(current, sensationLabels)
-            ?: findLabelValue(document.body(), sensationLabels)
+        val sensation = getSensation(document)
 
-        val details = document.findFirstBySelectors(
-            "section[data-testid=TodaysDetailsModule]",
-            "div[data-testid=TodaysDetailsModule]",
-            "section:has(h2:contains(Detalhes de hoje))",
-            "section:has(h2:contains(Today's Details))"
-        )
+        val wind = getDetailValue(document, "Wind")
+        val humidity = getDetailValue(document, "PercentageValue")
+        val pressure = getDetailValue(document, "PressureValue")
+        val rawAirQuality = getDetailValue(document, "AirQualityValue")
 
-        val wind = getDetailValue(details, document, listOf("Vento", "Wind"))
-        val humidity = getDetailValue(details, document, listOf("Umidade", "Humidity"))
-        val pressure = getDetailValue(details, document, listOf("Pressão", "Pressure"))
-        val airQuality = parseAirQuality(document)
+        // Separa o formato "60 - Moderada" e retorna apenas "Moderada"
+        val airQuality = rawAirQuality?.let {
+            if (it.contains("-")) it.substringAfter("-").trim() else it
+        } ?: parseAirQualityFallback(document)
 
         return WeatherData(
             city = city.orNA(),
@@ -44,86 +34,114 @@ class WeatherComScraper : WeatherScraper {
         )
     }
 
-    private fun getCity(document: Document): String? {
-        val city = document.findTextBySelectors(
-            "h1[class*=CurrentConditions--location]",
-            "h1[data-testid=LocationHeader]",
-            "header h1",
-            "h1[class*=location]",
-            "h1"
-        )
+    private fun getCity(document: Document): String {
+        val h1 = document.select("h1").firstOrNull {
+            it.className().contains("text-2xl") ||
+                    it.className().contains("font-extrabold") ||
+                    it.text().contains("Clima", ignoreCase = true) ||
+                    it.text().contains("Weather", ignoreCase = true)
+        } ?: document.selectFirst("h1")
 
-        city?.let {
-            val normalized = normalizeLabel(it)
-            if (!normalized.startsWith("tempo agora") && !normalized.startsWith("weather now")) {
-                return it
+        val exactSiblingMatch = h1?.nextElementSibling()?.selectFirst("p")?.text()?.trim()
+        if (!exactSiblingMatch.isNullOrBlank() && isNotFooterLink(exactSiblingMatch)) {
+            return exactSiblingMatch
+        }
+
+        val h1ParentMatch = h1?.parent()?.selectFirst("p")?.text()?.trim()
+        if (!h1ParentMatch.isNullOrBlank() && isNotFooterLink(h1ParentMatch)) {
+            return h1ParentMatch
+        }
+
+        h1?.text()?.let {
+            val cleaned = it.replace(Regex("(?i)\\s*(Clima em|Weather in|Tiempo en|Weather|Clima)\\s*"), "").trim()
+            if (cleaned.isNotBlank() && isNotFooterLink(cleaned)) return cleaned
+        }
+
+        return document.title().substringBefore(" | ").substringBefore(" - ").trim()
+    }
+
+    private fun isNotFooterLink(text: String): Boolean {
+        val lower = text.lowercase()
+        return !lower.contains("termos") &&
+                !lower.contains("privacidade") &&
+                !lower.contains("política") &&
+                !lower.contains("policy")
+    }
+
+    private fun getTemperature(document: Document): String? {
+        // Estratégia principal: o span com "font-extrabold" contém o valor final
+        // (ignora os frames anteriores da animação de troca de temperatura).
+        val extraboldValue = document.selectFirst("span[class*=font-extrabold] span[data-testid=TemperatureValue]")
+        if (extraboldValue != null) {
+            return extraboldValue.text().trim()
+        }
+
+        // Fallback: pega todos os valores de temperatura da página, ignorando os que
+        // estão dentro de blocos de sensação/máx/mín, previsão horária ou 10 dias.
+        val allTemps = document.select("span[data-testid=TemperatureValue]")
+        val mainTemps = allTemps.filterNot { temp ->
+            temp.parents().any { parent ->
+                val testId = parent.attr("data-testid")
+                testId.contains("temperatures", ignoreCase = true) ||
+                        testId.contains("hourly", ignoreCase = true) ||
+                        testId.contains("forecast", ignoreCase = true)
             }
         }
+        return mainTemps.lastOrNull()?.text()?.trim() ?: allTemps.firstOrNull()?.text()?.trim()
+    }
 
-        document.selectFirst("meta[property=og:title]")?.attr("content")?.takeIf { it.isNotBlank() }?.let {
-            return cleanTitle(it)
+    private fun getSensation(document: Document): String? {
+        val sensationContainer = document.selectFirst("div[data-testid=current-conditions-temperatures]") ?: return null
+
+        // Dentro desse bloco os TemperatureValue aparecem sempre na ordem
+        // Sensação, Máxima, Mínima — então o PRIMEIRO é sempre a sensação térmica.
+        return sensationContainer.selectFirst("span[data-testid=TemperatureValue]")?.text()?.trim()
+    }
+
+    /**
+     * Busca o valor de um detalhe (Vento, Umidade, Pressão, Qualidade do ar...) pelo
+     * data-testid ESPECÍFICO daquele campo (ex.: "Wind", "PercentageValue",
+     * "PressureValue", "AirQualityValue"), escopando a busca para dentro da section
+     * "Clima hoje" (data-testid="current-details").
+     *
+     * IMPORTANTE: isto só funciona se o "document" recebido já for o HTML
+     * renderizado (pós-JavaScript). Veja RenderedHtmlFetcher.
+     */
+    private fun getDetailValue(document: Document, valueTestId: String): String? {
+        val detailsSection = document.selectFirst("section[data-testid=current-details]")
+            ?: document.selectFirst("[aria-label*=Clima hoje]")
+            ?: document.selectFirst("[aria-label*=Today]")
+            ?: document.selectFirst("[aria-label*=current-details]")
+
+        val scope = detailsSection?.clone() ?: document.clone()
+        scope.select("svg, title, path").remove()
+
+        return scope.selectFirst("[data-testid=$valueTestId]")?.text()?.cleanValue()
+    }
+
+    private fun String.cleanValue(): String =
+        this.replace("\u00A0", " ").replace(Regex("\\s+"), " ").trim()
+
+    private fun parseAirQualityFallback(document: Document): String? {
+        // Fallback legado para o widget antigo de AQI em formato de "donut chart",
+        // caso a página volte a usar esse layout separado em vez da linha de detalhe.
+        document.selectFirst("div[data-testid=AirQualityIndex]")?.let { aqi ->
+            val value = aqi.selectFirst("[data-testid=DonutChartValue]")?.textOrNull()
+            val allH2 = aqi.select("h2").mapNotNull { it.textOrNull() }
+            val category = allH2.firstOrNull { text ->
+                val normalized = normalizeLabel(text)
+                !normalized.contains("indice de qualidade do ar") &&
+                        !normalized.contains("qualidade do ar") &&
+                        !normalized.contains("air quality")
+            } ?: allH2.getOrNull(1)
+
+            return when {
+                value != null && category != null -> "$category ($value)"
+                value != null -> value
+                category != null -> category
+                else -> aqi.textOrNull()
+            }
         }
-
-        document.title().takeIf { it.isNotBlank() }?.let {
-            return cleanTitle(it)
-        }
-
         return null
-    }
-
-    private fun cleanTitle(raw: String): String {
-        return raw.substringBefore(" | ")
-            .substringBefore(" - ")
-            .trim()
-            .removePrefix("Clima em ")
-            .removePrefix("Tempo em ")
-            .removePrefix("Weather in ")
-            .trim()
-    }
-
-    private fun getTemperature(current: Element?, document: Document): String? {
-        current?.let { section ->
-            val mainBlock = section.findFirstBySelectors(
-                "div[class*=text-5xl]",
-                "div[class*=primary]",
-                "div:has(> span > span:containsOwn(Agora))"
-            )
-
-            mainBlock?.select("[data-testid=TemperatureValue]")?.last()?.textOrNull()?.let { return it }
-
-            val temperatureOutsideSummary = section.select("[data-testid=TemperatureValue]")
-                .filter { element ->
-                    element.parents().none { parent ->
-                        parent.attr("data-testid") == "current-conditions-temperatures"
-                    }
-                }
-
-            temperatureOutsideSummary.firstOrNull()?.textOrNull()?.let { return it }
-        }
-
-        return document.findTextBySelectors(
-            "div[class*=CurrentConditions--primary] span[data-testid=TemperatureValue]",
-            "span[data-testid=TemperatureValue]"
-        )
-    }
-
-    private fun getDetailValue(details: Element?, document: Document, labels: List<String>): String? {
-        val normalizedLabels = labels.map(::normalizeLabel)
-
-        details?.select("div[data-testid=WeatherDetailsListItem]")?.forEach { item ->
-            val labelText = item.selectFirst("div[data-testid=WeatherDetailsLabel]")?.textOrNull()
-            if (labelText != null) {
-                val normalizedLabelText = normalizeLabel(labelText)
-                if (normalizedLabels.any { normalizedLabelText.contains(it) }) {
-                    val valueElement = item.selectFirst("div[data-testid=wxData], [data-testid=wxData]")
-                        ?: item.selectFirst("div:last-child, p:last-child, span:last-child")
-
-                    valueElement?.textOrNull()?.let { if (it.isNotBlank()) return it }
-                }
-            }
-        }
-
-        findLabelValue(details, labels)?.let { return it }
-        return findLabelValue(document.body(), labels)
     }
 }
